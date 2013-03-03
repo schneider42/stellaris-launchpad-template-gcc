@@ -40,6 +40,8 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/timer.h"
 
+#define DEBUG 1
+
 // Basically here I'm checking that everything works fine.
 volatile unsigned long count;
 long var_init = 2;
@@ -51,7 +53,7 @@ void Timer1A_ISR(void);
 int main(void) {
 	SysCtlClockSet(SYSCTL_SYSDIV_2_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-	TimerConfigure(TIMER1_BASE, TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PERIODIC);
+	TimerConfigure(TIMER1_BASE, TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PERIODIC | TIMER_CFG_B_PERIODIC);
 	TimerControlStall(TIMER1_BASE, TIMER_A, true);
 	TimerLoadSet(TIMER1_BASE, TIMER_A, 2111);
 	TimerIntRegister(TIMER1_BASE, TIMER_A, Timer1A_ISR);
@@ -69,3 +71,17 @@ void Timer1A_ISR(void){
 	TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 	count++;
 }
+
+#if DEBUG
+void __error__(char *pcFilename, unsigned long ulLine)
+{
+  //
+  // Something horrible happened! You need to look
+  // at file "pcFilename" at line "ulLine" to see
+  // what error is being reported.
+  //
+  while(1)
+  {
+  }
+}
+#endif
